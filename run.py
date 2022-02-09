@@ -1,3 +1,7 @@
+# import necessary modules
+from bs4 import BeautifulSoup
+import requests
+import json
 #import necessary modules
 from flask import Flask, render_template
 import json
