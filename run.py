@@ -18,26 +18,72 @@ def load_selectors():
 
 
 # webscraping function
+@app.route("/run-scraper")
 def my_scraper():
-    # YOUR CODE GOES HERE
-    pass
+    # get the URL in a useable form
+url = "https://www.w3schools.com/cssref/css_selectors.asp"
+response = requests.get(url)
+soup = BeautifulSoup(response.content, 'html.parser')
+
+# select your objects
+table_rows = [elem for elem in soup.select('.ws-table-all tr')]
+
+
+
+# define filter function
+def filter_func(elem):
+    return True
+
+# apply filter function
+table_rows = list(filter(filter_func, table_rows))
+
+
+# create the structure for the json file
+selectors = []
+
+for row in table_rows:
+    cells = list(row.select('td'))
+    if cells:
+        entry = {
+            'selector': "placeholder text, which will be overwritten below",
+            'example': cells[1].text,
+            'description': cells[2].text,
+            
+        }
+        # we need the following code beacause not all entries in the first column are text - some are links (a-tag)
+        if cells[0].a:
+            entry['selector'] = cells[0].a.text
+        else:
+            entry['selector'] = cells[0].text
+
+        selectors.append(entry)
+        
+
+
+
 
 
 # filter function
-def my_filter():
-    # YOUR CODE GOES HERE
-    pass
+def my_filter(elem):
+    return True
+    return "scraping-finished"
 
 # output to json
-def write_json():
-    # YOUR CODE GOES HERE
-    pass
+def write_json(selectors):
+    with open("selectors.json", 'w') as f:
+    json.dump(selectors, f,indent=4)
 
 
 # define route(s)
 @app.route("/")
 def home():
     return render_template("index.html")
+
+    # define route(s)
+@app.route("/scraping")
+def scraping():
+    return render_template("scraping.html")
+
 
 
 @app.route("/css-selectors")
